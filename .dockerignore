@@ -1,0 +1,18 @@
+# Build context exclusions for the Docker image.
+# Keep the Go source and module files; drop everything else.
+
+.git
+.github
+.codebuddy
+docs
+examples
+test
+dist
+build
+node_modules
+vendor
+*.md
+*.tar.gz
+*.log
+.idea
+.vscode

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="same-origin">
+<title>Watchtower · Container Updates</title>
+<link rel="icon" href="/ui/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/ui/assets/app.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 2 3 6v6c0 5 3.8 9.3 9 10 5.2-.7 9-5 9-10V6l-9-4Z"/>
+      <path class="logo-inner" d="M12 6.5v11M8.5 10h7" />
+    </svg>
+    <div class="brand-text">
+      <h1>Watchtower</h1>
+      <p class="brand-sub">
+        <span id="meta-version">Container image updates</span>
+        <span id="meta-scope" class="chip chip-quiet hidden" title="Monitoring scope"></span>
+      </p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <label class="auto-refresh" title="Reload the container list automatically">
+      <input type="checkbox" id="auto-refresh">
+      <span>Auto</span>
+      <select id="auto-refresh-interval" aria-label="Auto refresh interval">
+        <option value="15000">15s</option>
+        <option value="30000" selected>30s</option>
+        <option value="60000">60s</option>
+        <option value="300000">5m</option>
+      </select>
+    </label>
+    <button type="button" class="btn btn-ghost" id="btn-refresh">
+      <svg viewBox="0 0 24 24" class="icon" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4"/></svg>
+      <span>Refresh</span>
+    </button>
+    <form method="post" action="/ui/logout" class="inline-form">
+      <button type="submit" class="btn btn-ghost">Sign out</button>
+    </form>
+  </div>
+</header>
+
+<div id="alerts" class="alerts" role="status" aria-live="polite"></div>
+
+<main class="page">
+  <section class="stats" id="stats">
+    <article class="stat">
+      <span class="stat-label">Containers</span>
+      <span class="stat-value" id="stat-total">–</span>
+    </article>
+    <article class="stat">
+      <span class="stat-label">Running</span>
+      <span class="stat-value" id="stat-running">–</span>
+    </article>
+    <article class="stat stat-accent">
+      <span class="stat-label">Updates available</span>
+      <span class="stat-value" id="stat-updates">–</span>
+    </article>
+    <article class="stat">
+      <span class="stat-label">Last refresh</span>
+      <span class="stat-value stat-value-sm" id="stat-last">–</span>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <input type="search" id="filter" class="input" placeholder="Filter by name or image…" autocomplete="off">
+      </div>
+      <div class="toolbar-right">
+        <span class="selection-count" id="selection-count" hidden></span>
+        <button type="button" class="btn" id="btn-check-selected" disabled>Check selected</button>
+        <button type="button" class="btn" id="btn-update-selected" disabled>Update selected</button>
+        <span class="toolbar-sep" aria-hidden="true"></span>
+        <button type="button" class="btn" id="btn-check-all">Check all</button>
+        <button type="button" class="btn btn-primary" id="btn-update-all">Update all</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="table" id="container-table">
+        <thead>
+          <tr>
+            <th class="col-check">
+              <input type="checkbox" id="select-all" aria-label="Select all containers">
+            </th>
+            <th class="sortable" data-sort="name">Container</th>
+            <th class="sortable" data-sort="image">Image</th>
+            <th>State</th>
+            <th>Update</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="container-body">
+          <tr class="empty-row">
+            <td colspan="6">
+              <div class="loader" aria-label="Loading containers"></div>
+              <p>Loading containers…</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="footnote">
+    Every action on this page calls the documented HTTP API. The dashboard is read-through:
+    it cannot change how Watchtower scans or updates containers.
+  </p>
+</main>
+
+<div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+  window.__WATCHTOWER_UI__ = {{ .ConfigJSON }};
+</script>
+<script src="/ui/assets/app.js" defer></script>
+</body>
+</html>

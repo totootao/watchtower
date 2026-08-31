@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="same-origin">
+<title>Sign in · Watchtower</title>
+<link rel="icon" href="/ui/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/ui/assets/app.css">
+</head>
+<body class="login-body">
+<main class="login-card">
+  <div class="login-brand">
+    <svg class="logo logo-lg" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 2 3 6v6c0 5 3.8 9.3 9 10 5.2-.7 9-5 9-10V6l-9-4Z"/>
+      <path class="logo-inner" d="M12 6.5v11M8.5 10h7" />
+    </svg>
+    <h1>Watchtower</h1>
+    <p id="meta-version">Container image updates</p>
+  </div>
+
+  {{ if .Error }}
+  <p class="login-error" role="alert">{{ .Error }}</p>
+  {{ end }}
+
+  <form method="post" action="/ui/login" class="login-form" autocomplete="off">
+    <label for="token">API token</label>
+    <input type="password" id="token" name="token" class="input" required
+           autofocus spellcheck="false" autocapitalize="off" autocomplete="current-password"
+           placeholder="WATCHTOWER_HTTP_API_TOKEN">
+    <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+  </form>
+
+  <p class="login-hint">
+    Use the value of <code>http-api-token</code>. The token is stored in an
+    <code>HttpOnly</code> cookie and is never readable by page scripts.
+  </p>
+</main>
+<script>
+  window.__WATCHTOWER_UI__ = {{ .ConfigJSON }};
+</script>
+</body>
+</html>
