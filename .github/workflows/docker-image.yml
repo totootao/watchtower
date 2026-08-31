@@ -17,10 +17,16 @@ env:
 
 permissions:
   contents: read
+  actions: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Map the Docker Hub secrets to job-level env vars so they can be referenced
+    # from `if:` conditions (the `secrets` context is NOT allowed inside `if`).
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,11 +42,11 @@ jobs:
       - name: Log in to Docker Hub
         # Only log in when the Docker Hub secrets are configured. Without them the
         # build still succeeds (build-only), and the push is skipped automatically.
-        if: github.event_name != 'pull_request' && secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != ''
+        if: github.event_name != 'pull_request' && env.DOCKERHUB_USERNAME != ''
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
 
       - name: Extract image metadata
         id: meta
@@ -61,7 +67,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           # Push only when the Docker Hub secrets are present; otherwise build-only.
-          push: ${{ github.event_name != 'pull_request' && secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
+          push: ${{ github.event_name != 'pull_request' && env.DOCKERHUB_USERNAME != '' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
